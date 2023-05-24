@@ -21,6 +21,7 @@
             <div class="display" align="right">
                 <?PHP
 
+
                     //計算
                     function calculate(&$dsp_old){
 
@@ -63,8 +64,8 @@
                                         $max++;
                                         break;
                             case "*":
-                            case "/":   echo "ERROR";
-                                        exit;
+                            case "/":   $dsp_old = "ERROR";
+                                        return;
 
                         }
 
@@ -75,7 +76,7 @@
                         }
 
                         //ループ用、
-                    $j=0;
+                        $j=0;
 
                         //数値と符号を分けてそれぞれ配列に入れる
                         for($i=0;$i<=strlen($fms);$i++){
@@ -99,8 +100,8 @@
                                 if($fm[$j]==""){
                                     //+or-の後に*or/が続く時はエラー
                                     if($op[$j]=="*" || $op[$j]=="/"){
-                                        echo "ERROR";
-                                        exit;
+                                        $dsp_old = "ERROR";
+                                        return;
                                     //+or-の後に-が続く時は式変換
                                     }elseif($op[$j]=="-"){
                                         switch($op[$j-1]){
@@ -131,6 +132,10 @@
                         //割り算を掛け算に変換
                         for($i=0;$i<$max;$i++){
                             if($op[$i]=="/"){
+                                if($fm[$i+1]==0 || $fm[$i+1]==""){
+                                    $dsp_old = "ERROR";
+                                    return;
+                                }
                                 $fm[$i+1] = 1 / $fm[$i+1];
                                 $op[$i] = "*";
                             }
@@ -190,14 +195,81 @@
 
                     }
 
+                    //3桁区切り処理
+                    function cut(&$dsp_old){
+    
+                        $len = strlen($dsp_old);
+                        $fake = "";
+                        $view = "";
+                        $c = 0;
+                        
+                        for($i=$len-1;$i>=0;$i--){
+                            //echo "{$i}:";
+                            //$n[$i] = substr($dsp_old,$i,1);
+                            $n = substr($dsp_old,$i,1);
+                            
+                            //echo $n[$i];
+                            
+                            //抽出文字が数字だったら
+                            if(is_numeric($n)==true){
+                                //書き込み済み数字が3桁だったら"，"を挟む
+                                if($c>2){
+                                    $fake = ",".$fake;      
+                                    $c=0;  
+                                }
+                            }
+                            //表示用文字列として書き込む
+                            $fake = $n.$fake;
+
+                            //抽出文字が数字だったらカウントアップ、違ったらリセット
+                            if(is_numeric($n)==true){    
+                                $c++;
+                            }else{
+                                $c=0;
+                            }
+                        }
+
+                        //改めて先頭から見て、小数部に","があったら消す。
+                        $len = strlen($fake);
+                        $del = 0;
+
+                        for($i=0;$i<$len;$i++){
+                            $n = substr($fake,$i,1);
+                        
+                            
+
+                            //削除フラグがあがっているときは、","を無視
+                            if($del==1){
+                                if($n!=","){
+                                    $view = $view.$n;
+                                }
+                                //数字以外の文字が出てきたら、削除フラグ下げる
+                                if(is_numeric($n)==false){
+                                    $del=0;
+                                }
+                            }else{
+                                $view = $view.$n;
+                            }
+
+                            //追加した文字が小数点だったら、","削除フラグ上げる
+                            if($n=="."){
+                                $del=1;
+                            }
+
+                        }
+
+                        return $view;
+
+                    }
 
                     //初期化処理
-                    function initialize(&$dsp_old,&$dsp,&$j_in,&$j_dp,&$j_op){
+                    function initialize(&$dsp_old,&$dsp,&$j_in,&$j_dp,&$j_op,&$len){
                         $dsp_old="0";
                         $dsp="0";
                         $j_in=0;
                         $j_dp=0;
                         $j_op=0;
+                        $len=1;
                     }
 
                     //先頭が0か判断、0なら処理
@@ -206,7 +278,6 @@
                         if($dsp_old=="0" && $j_dp==0){
                             //小数点が打たれた場合
                             if($dsp=="."){
-
                                 return 0;
                             }else{
                                 //初期化後入力されているか
@@ -235,14 +306,15 @@
                         
                     //入力値あるかどうか
                     if(isset($dsp)){
+                        
                         //ACが押されたかどうか
                         if($dsp == "AC")
                         {
                             //表示を初期化
                             //$dsp_old="0";
-                            initialize($dsp_old,$dsp,$j_in,$j_dp,$j_op);
+                            initialize($dsp_old,$dsp,$j_in,$j_dp,$j_op,$len);
                             
-                        }else{
+                        }else{                            
                             
                             //先頭が0かどうか確認
                             judge_head($dsp_old,$dsp,$j_in,$j_dp,$j_op);
@@ -256,22 +328,6 @@
                                 }
                             }
 
-/*
-                            //演算子入力だった場合、数値と演算子を個別保存
-                            if(
-                                $dsp=="+" 
-                                || $dsp=="-"
-                                || $dsp=="×"
-                                || $dsp=="÷"
-                            ){
-                                $fm[i]=$dsp_old;
-                                $op[i]=$dsp;
-                                i++;
-                            }
-*/
-                            
-                            
-
                             //前回の入力値に今回の入力値をくっつける。
                             $dsp_old .= $dsp;
 
@@ -281,16 +337,79 @@
                         
                     }else{
                         //初期値設定
-                        initialize($dsp_old,$dsp,$j_in,$j_dp,$j_op);
+                        initialize($dsp_old,$dsp,$j_in,$j_dp,$j_op,$len);
                     }
-                    
 
-                    //計算結果表示
+                            //入力値の限界桁は8桁
+                            $len_max = 8;
+                            //小数点があった場合は9桁
+                            if($j_dp==1){
+                                $len_max = 9;
+                            } 
+                            //入力済みの桁が限界をこえてたら
+                            if($len+1>$len_max){
+                                if(
+                                    $dsp=="+" 
+                                    || $dsp=="-"
+                                    || $dsp=="*"
+                                    || $dsp=="/"
+                                ){
+                                    //なにもしない
+                                }else{
+                                    $dsp_old = "ERROR";
+                                    echo "ERROR";
+                                    goto error;
+                                }
+                            }
+
+                    //=が入力されていた場合は計算
                     if($dsp=="="){
                         calculate($dsp_old);
+
+                        //計算結果が、8桁を超える場合は、上から8桁分表示
+                        $len_max = 8;
+                            //負の数の時の符号は含まないので+1桁
+                            if($dsp_old<0){
+                                $len_max++;
+                            } 
+
+                            //少数点も含まないので+1桁
+                            if(strpos($dsp_old,".")!=false){
+                                $len_max++;
+                            }
+
+                            //入力済みの桁が限界をこえてたら
+                            if($len_max<strlen($dsp_old)){
+                                $dsp_old = substr($dsp_old,0,$len_max);
+                            }
+
+                        echo cut($dsp_old);
+
+                        error:
+                        initialize($dsp_old,$dsp,$j_in,$j_dp,$j_op,$len);
+                    }else{
+
+                        //計算結果表示
+                        echo cut($dsp_old);
+                        //echo "&".$dsp;
+                        
+                        //桁カウント
+                        //入力値が演算子の時、初期値から変わッて無い時、リセット
+                        if(
+                            $dsp=="+" 
+                            || $dsp=="-"
+                            || $dsp=="*"
+                            || $dsp=="/"
+                            || strlen($dsp_old)==1
+                        ){
+                            $len = 1;
+                        }else{
+                            $len++;
+                        }
+
+                        //表示
+                        //echo "len:[{$len}]";
                     }
-                    echo $dsp_old;
-                    //echo "&".$dsp;
 
                     //フラグ処理
                     switch($dsp){   
@@ -310,12 +429,13 @@
                         $j_in,
                         $dsp_old,
                         $j_dp,
-                        $j_op
+                        $j_op,
+                        $len
                         );
 
                     //echo $var[0],$var[1];
 
-                for($i=0;$i<4;$i++){
+                for($i=0;$i<5;$i++){
                     echo "<input type=\"hidden\" name=\"var{$i}\" value=\"{$var[$i]}\">";
                 }    
                 
