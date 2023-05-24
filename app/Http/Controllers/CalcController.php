@@ -14,7 +14,8 @@ class CalcController extends Controller
         $dsp_old = $req->var1;
         $j_dp = $req->var2;
         $j_op = $req->var3;
-        return view('calculator',compact('dsp','j_in','dsp_old','j_dp','j_op'));
+        $len = $req->var4;
+        return view('calculator',compact('dsp','j_in','dsp_old','j_dp','j_op','len'));
     }
     
     public function result(Request $req)
