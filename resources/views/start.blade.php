@@ -58,6 +58,7 @@
                         break;
             case 52 :   n =4;
                         break;
+            case 27 :   dsp =0;
             default :   n =0;
         }
 
