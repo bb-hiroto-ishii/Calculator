@@ -164,6 +164,10 @@
                         //掛け算を足し算に変換
                         for($i=0;$i<$max;$i++){
                             if($op[$i]=="*"){
+                                if($fm[$i+1]==""){
+                                    $dsp_old = "ERROR";
+                                    return;
+                                }
                                 $fm[$i+1] = $fm[$i] * $fm[$i+1];
                                 $fm[$i] = 0;
                                 $op[$i] = "+";
