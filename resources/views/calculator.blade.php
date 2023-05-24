@@ -447,9 +447,7 @@
                     echo "<input type=\"hidden\" name=\"var{$i}\" value=\"{$var[$i]}\">";
                 }    
                 
-
                 ?>
-
 
             </div>
             </p>
