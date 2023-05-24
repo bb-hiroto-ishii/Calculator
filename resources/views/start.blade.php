@@ -14,7 +14,7 @@
     <?php
     
 
-    $dsp_old = "10+8-6*4/2=";
+    $dsp_old = "-5*-+--5*-+5=";
 
     //i:何番目の文字を見るか
     //j:何番目の配列に入れるか
@@ -25,31 +25,77 @@
     <?php
 
 
-
+$j_er=0;
 $j=0;
-for($i=0;$i<5;$i++){
-    $fm[$i]="";
-    $op[$i]="";
-}
+$max=50;
+
+
+    //先頭に符号があった場合
+    //先頭の文字
+    $t=substr($dsp_old,0,1);
+
+    switch($t){
+        case "+":
+        case "-":   $dsp_old = "0".$dsp_old;
+                    $max++;
+                    break;
+        case "*":
+        case "/":   echo "ERROR";
+                    exit;
+
+    }
+
+    for($i=0;$i<$max;$i++){
+        $fm[$i]="";
+        $op[$i]="";
+    }
+
+    //数値と符号を分けてそれぞれ配列に入れる
     for($i=0;$i<=strlen($dsp_old);$i++){
+        //$i番目の文字を取得
         $t=substr($dsp_old,$i,1);
+        //=まで来たらループ抜ける
         if($t=="="){
             break;
         }
+        //文字が演算子だったら
         if(
             $t=="+"
             || $t=="-"
             || $t=="*"
             || $t=="/"
         ){
+            //演算子用配列に入れる
             $op[$j]=$t;
-            $j++;
+
+            //$op[$j]の前に数値がなかったら、
+            if($fm[$j]==""){
+                //+or-の後に*or/が続く時はエラー)
+                if($op[$j]=="*" || $op[$j]=="/"){
+                    echo "ERROR";
+                    exit;    
+                }elseif($op[$j]=="-"){
+                    switch($op[$j-1]){
+                        case "+":   $op[$j-1]="-";
+                                    break;
+                        case "-":   $op[$j-1]="+";
+                                    break;
+                        case "*":
+                        case "/":   $fm[$j-1]=-$fm[$j-1]; 
+                                    break;
+                    }
+                }
+                //+なら無視する
+            }else{
+                $j++;
+            }
         }else{
             $fm[$j].=$t;
         }
     }
 
-    for($i=0;$i<5;$i++){
+    //式を表示
+    for($i=0;$i<$max;$i++){
         echo $fm[$i].$op[$i];
     }
 
@@ -57,14 +103,16 @@ for($i=0;$i<5;$i++){
 </p><p>
     <?php
 
-    for($i=0;$i<5;$i++){
+    //割り算を掛け算に変換
+    for($i=0;$i<$max;$i++){
         if($op[$i]=="/"){
             $fm[$i+1] = 1 / $fm[$i+1];
             $op[$i] = "*";
         }
     }
 
-    for($i=0;$i<5;$i++){
+    //表示
+    for($i=0;$i<$max;$i++){
         echo $fm[$i].$op[$i];
     }
 
@@ -72,14 +120,16 @@ for($i=0;$i<5;$i++){
 </p><p>
     <?php
 
-    for($i=0;$i<5;$i++){
+    //引き算を足し算に変換
+    for($i=0;$i<$max;$i++){
         if($op[$i]=="-"){
             $fm[$i+1] = -$fm[$i+1];
             $op[$i] = "+";
         }
     }
 
-    for($i=0;$i<5;$i++){
+    //表示
+    for($i=0;$i<$max;$i++){
         echo $fm[$i].$op[$i];
     }
 
@@ -87,41 +137,54 @@ for($i=0;$i<5;$i++){
 </p><p>
     <?php
 
-//*1しかなくなるまで何回も回す
-    for($i=0;$i<5;$i++){
+    //掛け算を足し算に変換
+    for($i=0;$i<$max;$i++){
         if($op[$i]=="*"){
-            $fm[$i] = $fm[$i] * $fm[$i+1];
-            $fm[$i+1] = "1";
+            $fm[$i+1] = $fm[$i] * $fm[$i+1];
+            $fm[$i] = 0;
+            $op[$i] = "+";
         }
     }
 
-
-
-    for($i=0;$i<5;$i++){
+    //表示
+    for($i=0;$i<$max;$i++){
         echo $fm[$i].$op[$i];
     }
 
+    ?>
+</p><p>
+    <?php
+
+    for($i=0;$i<$max;$i++){
+        $fm[$i] = (float)$fm[$i];
+    }
+
+    //表示
+    for($i=0;$i<$max;$i++){
+        echo "{$fm[$i]}/";
+    }
+
+    ?>
+</p><p>
+    <?php
+
+    //表示
+    for($i=0;$i<$max;$i++){
+        echo var_dump($op[$i]);
+    }
+
+    ?>
+</p><p>
+    <?php
+
+    //全て足す
     $ans=0;
-    for($i=0;$i<5;$i++){
-        echo $ans += $fm[$i];
+    for($i=0;$i<$max;$i++){
+        $ans = $ans + $fm[$i];
     }
 
-    
-    //$fm1=var_dump((float)$fm1);
-    //$fm2=var_dump((float)$fm2);
-
-    //$ans = $fm1+$fm2;
-
-    //echo $ans;
-
-
-    /*
-    if($j_op==1){
-        fm[$i] = $dsp;
-        $i++; 
-        $j_op=0;
-    }
-    */
+    //結果表示
+    echo $ans;
 
 ?>
 </p>
