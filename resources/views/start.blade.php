@@ -22,7 +22,70 @@
     ?>
 </p>
 <p>
+
+    <script>
+        var dsp = 0;
+        var n = 0;
+
+
+    addEventListener("keydown", keydownEvent);
+
+    function keydownEvent(event) {
+        
+        var key_code = event.keyCode;
+        
+
+        // if( key_code === 49){
+        //     //alert(event.keyCode);
+            
+        //     dsp +=1;
+
+        // }
+
+        // if( key_code === 50){
+        //     //alert(event.keyCode);
+            
+        //     dsp +=2;
+   
+        // }
+
+        switch( key_code ){
+            case 49 :   n =1;
+                        break;
+            case 50 :   n =2;
+                        break;
+            case 51 :   n =3;
+                        break;
+            case 52 :   n =4;
+                        break;
+            default :   n =0;
+        }
+
+        dsp += n;
+       
+            var testarea = document.getElementById("testarea");
+            testarea.innerHTML = dsp;
+    }
+
+    </script>
+</p>
+<p id="testarea">
+テスト
+</p>
+
+    <button type="button" onclick="ALERT()" id="testarea">最高だぜ！</button>
+
+    <script>
+        function ALERT(){
+            alert("yeah!");
+        }
+    </script>
+</p>
+<p>
+
     <?php
+
+
 
 
 function cut(&$dsp_old){
