@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
 
-<head><title>test</title></head>
-<a href = "http://localhost/Calculator/public/calculator">戻る</a>
+<head>
+    <title>test</title>
+</head>
+<a href="http://localhost/Calculator/public/calculator">戻る</a>
 
 <p>
-<?PHP
+    <?PHP
 
     echo "電卓作成がんばろう！";
 ?>
@@ -13,30 +15,52 @@
 <p>
     <?php
     
-
-    $dsp_old = "-5*-+--5*-+5=";
-
-    //i:何番目の文字を見るか
-    //j:何番目の配列に入れるか
+    //式
+    $dsp_old = "5*5.5-2=";
  
     ?>
 </p>
 <p>
     <?php
 
+function calculate(&$dsp_old){
 
-$j_er=0;
-$j=0;
-$max=50;
+$fms = $dsp_old;
+
+//演算子の数
+$max=0;
+
+//演算子の数を数える
+for($i=0;$i<=strlen($fms);$i++){
+    //$i番目の文字を取得
+    $t=substr($fms,$i,1);
+    //=まで来たらループ抜ける
+    if($t=="="){
+        $max++;
+        break;
+    
+    //文字が演算子だったら
+    }elseif(
+        $t=="+"
+        || $t=="-"
+        || $t=="*"
+        || $t=="/"
+    ){
+        $max++;
+    }
+}
+
+//表示
+// echo "[{$max}]";
 
 
     //先頭に符号があった場合
     //先頭の文字
-    $t=substr($dsp_old,0,1);
+    $t=substr($fms,0,1);
 
     switch($t){
         case "+":
-        case "-":   $dsp_old = "0".$dsp_old;
+        case "-":   $fms = "0".$fms;
                     $max++;
                     break;
         case "*":
@@ -45,15 +69,19 @@ $max=50;
 
     }
 
+    //必要数分配列を用意
     for($i=0;$i<$max;$i++){
         $fm[$i]="";
         $op[$i]="";
     }
 
+    //ループ用、
+$j=0;
+
     //数値と符号を分けてそれぞれ配列に入れる
-    for($i=0;$i<=strlen($dsp_old);$i++){
+    for($i=0;$i<=strlen($fms);$i++){
         //$i番目の文字を取得
-        $t=substr($dsp_old,$i,1);
+        $t=substr($fms,$i,1);
         //=まで来たらループ抜ける
         if($t=="="){
             break;
@@ -70,10 +98,11 @@ $max=50;
 
             //$op[$j]の前に数値がなかったら、
             if($fm[$j]==""){
-                //+or-の後に*or/が続く時はエラー)
+                //+or-の後に*or/が続く時はエラー
                 if($op[$j]=="*" || $op[$j]=="/"){
                     echo "ERROR";
-                    exit;    
+                    exit;
+                //+or-の後に-が続く時は式変換
                 }elseif($op[$j]=="-"){
                     switch($op[$j-1]){
                         case "+":   $op[$j-1]="-";
@@ -95,13 +124,10 @@ $max=50;
     }
 
     //式を表示
-    for($i=0;$i<$max;$i++){
-        echo $fm[$i].$op[$i];
-    }
+    // for($i=0;$i<$max;$i++){
+    //     echo $fm[$i].$op[$i];
+    // }
 
-    ?>
-</p><p>
-    <?php
 
     //割り算を掛け算に変換
     for($i=0;$i<$max;$i++){
@@ -111,14 +137,11 @@ $max=50;
         }
     }
 
-    //表示
-    for($i=0;$i<$max;$i++){
-        echo $fm[$i].$op[$i];
-    }
+    // //表示
+    // for($i=0;$i<$max;$i++){
+    //     echo $fm[$i].$op[$i];
+    // }
 
-    ?>
-</p><p>
-    <?php
 
     //引き算を足し算に変換
     for($i=0;$i<$max;$i++){
@@ -128,14 +151,11 @@ $max=50;
         }
     }
 
-    //表示
-    for($i=0;$i<$max;$i++){
-        echo $fm[$i].$op[$i];
-    }
+    // //表示
+    // for($i=0;$i<$max;$i++){
+    //     echo $fm[$i].$op[$i];
+    // }
 
-    ?>
-</p><p>
-    <?php
 
     //掛け算を足し算に変換
     for($i=0;$i<$max;$i++){
@@ -146,36 +166,16 @@ $max=50;
         }
     }
 
-    //表示
-    for($i=0;$i<$max;$i++){
-        echo $fm[$i].$op[$i];
-    }
+    // //表示
+    // for($i=0;$i<$max;$i++){
+    //     echo $fm[$i].$op[$i];
+    // }
 
-    ?>
-</p><p>
-    <?php
 
+    //型変換
     for($i=0;$i<$max;$i++){
         $fm[$i] = (float)$fm[$i];
     }
-
-    //表示
-    for($i=0;$i<$max;$i++){
-        echo "{$fm[$i]}/";
-    }
-
-    ?>
-</p><p>
-    <?php
-
-    //表示
-    for($i=0;$i<$max;$i++){
-        echo var_dump($op[$i]);
-    }
-
-    ?>
-</p><p>
-    <?php
 
     //全て足す
     $ans=0;
@@ -183,9 +183,16 @@ $max=50;
         $ans = $ans + $fm[$i];
     }
 
-    //結果表示
-    echo $ans;
+    //結果格納
+    $dsp_old = $ans;
 
+    //結果表示
+    echo $dsp_old;
+
+}
+
+calculate($dsp_old);
 ?>
 </p>
+
 </html>
