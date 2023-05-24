@@ -16,12 +16,92 @@
     <?php
     
     //式
-    $dsp_old = "5*5.5-2=";
+    $dsp_old = "1234.5678+784.323232-345643.3454";
+    echo $dsp_old;
  
     ?>
 </p>
 <p>
     <?php
+
+
+function cut(&$dsp_old){
+    
+    $len = strlen($dsp_old);
+    $fake = "";
+    $view = "";
+    $c = 0;
+
+    echo "[{$len}]";
+    
+    for($i=$len-1;$i>=0;$i--){
+        //echo "{$i}:";
+        //$n[$i] = substr($dsp_old,$i,1);
+        $n = substr($dsp_old,$i,1);
+        
+        //echo $n[$i];
+        
+        //抽出文字が数字だったら
+        if(is_numeric($n)==true){
+            //書き込み済み数字が3桁だったら"，"を挟む
+            if($c>2){
+                $fake = ",".$fake;      
+                $c=0;  
+            }
+        }
+        //表示用文字列として書き込む
+        $fake = $n.$fake;
+
+        //抽出文字が数字だったらカウントアップ、違ったらリセット
+        if(is_numeric($n)==true){    
+            $c++;
+        }else{
+            $c=0;
+        }
+    }
+
+    //改めて先頭から見て、小数部に","があったら消す。
+    $len = strlen($fake);
+    $del = 0;
+
+    for($i=0;$i<$len;$i++){
+        $n = substr($fake,$i,1);
+    
+        
+
+        //削除フラグがあがっているときは、","を無視
+        if($del==1){
+            if($n!=","){
+                $view = $view.$n;
+            }
+            //数字以外の文字が出てきたら、削除フラグ下げる
+            if(is_numeric($n)==false){
+                $del=0;
+            }
+        }else{
+            $view = $view.$n;
+        }
+
+        //追加した文字が小数点だったら、","削除フラグ上げる
+        if($n=="."){
+            $del=1;
+        }
+
+        //echo "i:{$i},n:{$n},del:{$del}_";
+    }
+
+    // echo "FAKE:";
+    // echo $fake;
+    echo "VIEW:";
+    echo $view;
+
+    // for($i=0;$i<$len;$i++){
+    //     echo "【{$n[$i]}】";
+    // }
+
+}
+
+cut($dsp_old);
 
 function calculate(&$dsp_old){
 
@@ -51,7 +131,7 @@ for($i=0;$i<=strlen($fms);$i++){
 }
 
 //表示
-// echo "[{$max}]";
+echo "[{$max}]";
 
 
     //先頭に符号があった場合
@@ -124,74 +204,80 @@ $j=0;
     }
 
     //式を表示
-    // for($i=0;$i<$max;$i++){
-    //     echo $fm[$i].$op[$i];
-    // }
+    for($i=0;$i<$max;$i++){
+        echo $fm[$i].$op[$i];
+    }
 
 
     //割り算を掛け算に変換
     for($i=0;$i<$max;$i++){
         if($op[$i]=="/"){
-            $fm[$i+1] = 1 / $fm[$i+1];
-            $op[$i] = "*";
+            if($fm[$i+1] == "0" || $fm[$i+1] == ""){
+                exit;
+            }else{
+                $fm[$i+1] = 1 / $fm[$i+1];
+                $op[$i] = "*";
+            }
         }
     }
 
-    // //表示
-    // for($i=0;$i<$max;$i++){
-    //     echo $fm[$i].$op[$i];
-    // }
 
-
-    //引き算を足し算に変換
+    //表示
     for($i=0;$i<$max;$i++){
-        if($op[$i]=="-"){
-            $fm[$i+1] = -$fm[$i+1];
-            $op[$i] = "+";
-        }
+        echo $fm[$i].$op[$i];
     }
-
-    // //表示
-    // for($i=0;$i<$max;$i++){
-    //     echo $fm[$i].$op[$i];
-    // }
-
-
-    //掛け算を足し算に変換
-    for($i=0;$i<$max;$i++){
-        if($op[$i]=="*"){
-            $fm[$i+1] = $fm[$i] * $fm[$i+1];
-            $fm[$i] = 0;
-            $op[$i] = "+";
-        }
-    }
-
-    // //表示
-    // for($i=0;$i<$max;$i++){
-    //     echo $fm[$i].$op[$i];
-    // }
-
-
-    //型変換
-    for($i=0;$i<$max;$i++){
-        $fm[$i] = (float)$fm[$i];
-    }
-
-    //全て足す
-    $ans=0;
-    for($i=0;$i<$max;$i++){
-        $ans = $ans + $fm[$i];
-    }
-
-    //結果格納
-    $dsp_old = $ans;
-
-    //結果表示
-    echo $dsp_old;
-
 }
 
-calculate($dsp_old);
+//     //引き算を足し算に変換
+//     for($i=0;$i<$max;$i++){
+//         if($op[$i]=="-"){
+//             $fm[$i+1] = -$fm[$i+1];
+//             $op[$i] = "+";
+//         }
+//     }
+
+//     // //表示
+//     // for($i=0;$i<$max;$i++){
+//     //     echo $fm[$i].$op[$i];
+//     // }
+
+
+//     //掛け算を足し算に変換
+//     for($i=0;$i<$max;$i++){
+//         if($op[$i]=="*"){
+//             $fm[$i+1] = $fm[$i] * $fm[$i+1];
+//             $fm[$i] = 0;
+//             $op[$i] = "+";
+//         }
+//     }
+
+//     // //表示
+//     // for($i=0;$i<$max;$i++){
+//     //     echo $fm[$i].$op[$i];
+//     // }
+
+
+//     //型変換
+//     for($i=0;$i<$max;$i++){
+//         $fm[$i] = (float)$fm[$i];
+//     }
+
+//     //全て足す
+//     $ans=0;
+//     for($i=0;$i<$max;$i++){
+//         $ans = $ans + $fm[$i];
+//     }
+
+//     //結果格納
+//     $dsp_old = $ans;
+
+//     //結果表示
+//     echo $dsp_old;
+
+// }
+
+//calculate($dsp_old);
+
 ?>
 </p>
 
