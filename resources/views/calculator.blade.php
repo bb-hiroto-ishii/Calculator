@@ -207,6 +207,14 @@
                             //echo "{$i}:";
                             //$n[$i] = substr($dsp_old,$i,1);
                             $n = substr($dsp_old,$i,1);
+
+                            //*と/を変換
+                            if($n=="*"){
+                                $n = "×";
+                            }
+                            if($n=="/"){
+                                $n = "÷";
+                            }
                             
                             //echo $n[$i];
                             
