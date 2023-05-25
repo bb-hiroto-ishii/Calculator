@@ -16,15 +16,64 @@
     <?php
     
     //式
-    $dsp_old = "1234.5678+784.323232-345643.3454";
+    $dsp_old = "1232+10101000";
     echo $dsp_old;
- 
+    
+    $j_error = 0;
+
+    function count_digit(&$dsp_old,&$j_error){
+        
+        $max = 8;
+        $len = strlen($dsp_old);
+        $result ="";
+        $count = 0;
+        
+        //後ろから順に、演算子以外を抜き出す
+        for($i=1;$i<=$len;$i++){ 
+            $n = substr($dsp_old,-$i,1);
+
+            //見ているところが演算子だったら処理終了
+            if(
+                $n=="+"
+                || $n=="-"
+                || $n=="*"
+                || $n=="/"
+            ){
+                return;
+            //それ以外ならカウントアップ
+            }else{
+                //小数点だったら限界桁数+1
+                if($n == "."){
+                    $max = 9;
+                }
+                $count++;
+
+                //カウントが最大桁数超えたらエラーフラグ上げ
+                if($count>$max){
+                    $j_error=1;
+                    return;
+                }
+            }
+        }
+
+        
+    }
+
+    count_digit($dsp_old,$j_error);
+
+    echo "桁チェック:{$j_error}";
+
     ?>
 </p>
 <p>
 
+    
+
+
+
+
     <script>
-        var dsp = 0;
+        var dsp = "";
         var n = 0;
 
 
@@ -50,6 +99,10 @@
         // }
 
         switch( key_code ){
+            case 13 :   calc();
+                        break;
+            case 48 :   n =0;
+                        break;
             case 49 :   n =1;
                         break;
             case 50 :   n =2;
@@ -58,14 +111,42 @@
                         break;
             case 52 :   n =4;
                         break;
-            case 27 :   dsp =0;
-            default :   n =0;
+            case 53 :   n =5;
+                        break;
+            case 54 :   n =6;
+                        break;
+            case 55 :   n =7;
+                        break;
+            case 56 :   n =8;
+                        break;
+            case 57 :   n =9;
+                        break;                        
+            case 27 :   dsp ="";n=0;
+                        calc();
+                        break;
+            default :   n =0
+                        alert(key_code);
         }
 
-        dsp += n;
-       
-            var testarea = document.getElementById("testarea");
+        if(key_code != 13){
+            dsp = ""+dsp+n;
+            
+        }
+
+        var testarea = document.getElementById("testarea");
             testarea.innerHTML = dsp;
+
+        if(key_code===13){
+            dsp = "";
+            n = 0;
+        }
+
+            // var testarea = document.getElementById("testarea");
+            // testarea.innerHTML = dsp;
+    }
+
+    function calc(){
+        dsp = dsp*10;
     }
 
     </script>

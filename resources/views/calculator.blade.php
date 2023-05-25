@@ -77,8 +77,7 @@
 
                         }
 
-<<<<<<< Updated upstream
-=======
+
                         //末尾に符号があった場合エラー
                         $t=substr($fms,-2,1);
 
@@ -95,7 +94,7 @@
                             return;
                         }
 
->>>>>>> Stashed changes
+
                         //必要数分配列を用意
                         for($i=0;$i<$max;$i++){
                             $fm[$i]="";
@@ -248,10 +247,8 @@
                         //デバッグ用
                         console_log("len",$len);
 
-<<<<<<< Updated upstream
-=======
                         //末尾から順に抽出
->>>>>>> Stashed changes
+
                         for($i=$len-1;$i>=0;$i--){
                             //echo "{$i}:";
                             //$n[$i] = substr($dsp_old,$i,1);
@@ -426,12 +423,6 @@
                             //先頭が0かどうか確認
                             judge_head($dsp_old,$dsp,$j_in,$j_dp,$j_op);
 
-<<<<<<< Updated upstream
-                            //小数点入力していいか
-                            if($dsp=="."){
-                                if($j_dp==0){
-                                    $j_dp=1;
-=======
                             //小数点入力されたら
                             if($dsp=="."){
                                 //小数点入力フラグを上げる
@@ -450,14 +441,13 @@
                                     }
 
                                 //既に小数点入力済みなら入力無効
->>>>>>> Stashed changes
+
                                 }else{
                                     $dsp="";
                                 }
                             }
 
-<<<<<<< Updated upstream
-=======
+
                             //演算子が入力されたら、小数点入力フラグ下げる
                             if(
                                 $dsp=="+"
@@ -468,7 +458,7 @@
                                 $j_dp=0;
                             }
 
->>>>>>> Stashed changes
+
                             //前回の入力値に今回の入力値をくっつける。
                             $dsp_old .= $dsp;
 
@@ -507,15 +497,10 @@
                     //     }
                     // }
 
-<<<<<<< Updated upstream
-                    //デバッグ用
-                    console_log("文字数",$len+1);
-                    console_log("限界文字数",$len_max);
-=======
+
                     // //デバッグ用
                     // console_log("文字数",$len+1);
                     // console_log("限界文字数",$len_max);
->>>>>>> Stashed changes
 
                     //表示フェーズ
                     //=が入力されていた場合は計算

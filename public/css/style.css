@@ -24,18 +24,21 @@
 
 .display{
     width:90%; 
-    height:50px;  
+    height:60px;  
     margin-bottom: 10px; 
     border: 5px double #ffffff; 
     color: #ffffff; 
     font-size:40px;
     border-radius: 10px; 
     background-color: #000000;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .base{
     width:400px;
-    height: 300px;
+    height: 320px;
     margin-bottom: 10px; 
     border: 1px solid #333333; 
     border-radius: 10px; 
