@@ -344,6 +344,45 @@
                         }
                         return 0;
                     }
+
+                    //入力値の桁数チェック
+                    function count_digit(&$dsp_old,&$j_error){
+        
+                        $max = 8;
+                        $len = strlen($dsp_old);
+                        $result ="";
+                        $count = 0;
+                        
+                        //後ろから順に、演算子以外を抜き出す
+                        for($i=1;$i<=$len;$i++){ 
+                            $n = substr($dsp_old,-$i,1);
+
+                            //見ているところが演算子だったら処理終了
+                            if(
+                                $n=="+"
+                                || $n=="-"
+                                || $n=="*"
+                                || $n=="/"
+                            ){
+                                return;
+                            //それ以外ならカウントアップ
+                            }else{
+                                //小数点だったら限界桁数+1
+                                if($n == "."){
+                                    $max = 9;
+                                }
+                                $count++;
+
+                                //カウントが最大桁数超えたらエラーフラグ上げ
+                                if($count>$max){
+                                    $j_error=1;
+                                    return;
+                                }
+                            }
+                        }
+
+                        
+                    }
                         
                     //ここからメインルート
                     $j_error = 0;
@@ -386,6 +425,9 @@
                         //初期値設定
                         initialize($dsp_old,$dsp,$j_in,$j_dp,$j_op,$len);
                     }
+
+                    //入力値の桁数チェック
+                    count_digit($dsp_old,$j_error);
 
                     // //入力値の限界桁は8桁
                     // $len_max = 8;
