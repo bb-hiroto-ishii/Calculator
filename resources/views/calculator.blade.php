@@ -408,9 +408,9 @@
                     //     }
                     // }
 
-                    //デバッグ用
-                    console_log("文字数",$len+1);
-                    console_log("限界文字数",$len_max);
+                    // //デバッグ用
+                    // console_log("文字数",$len+1);
+                    // console_log("限界文字数",$len_max);
 
                     //表示フェーズ
                     //=が入力されていた場合は計算
