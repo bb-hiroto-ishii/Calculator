@@ -1,0 +1,38 @@
+.b1{
+    height: 45px;
+    width: 65px;
+    font-size:30px;
+    color:#ffffff;
+    background-color: #5f00b3;
+    border-radius: 50%;
+}
+
+.b2{
+    height: 90px;
+    width: 65px;
+    font-size:30px;
+    color:#ffffff;
+    background-color: #5f00b3;
+    border-radius: 50%;
+}
+
+.display{
+    width:90%; 
+    height:60px;  
+    margin-bottom: 10px; 
+    border: 5px double #ffffff; 
+    color: #ffffff; 
+    font-size:40px;
+    background-color: #000000;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.base{
+    width:400px;
+    height: 320px;
+    margin-bottom: 10px; 
+    border: 3px solid #333333;  
+    background-color: #6c22e4;
+}
