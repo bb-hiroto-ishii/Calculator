@@ -23,6 +23,8 @@ Route::get('/start', function () {
     return view('start');
 });
 
+//php電卓
+
 Route::get('/calculator', function () {
     return view('calculator');
 });
@@ -34,3 +36,10 @@ Route::get('/result', function () {
 
 Route::post('/calculator', [CalcController::class,'calculator']);
 Route::post('/result', [CalcController::class,'result']);
+
+//jvs電卓
+
+Route::get('/jvs/calculator', function () {
+    return view('jvscalc');
+});
+Route::post('/jvs/calculator', [JvsCalcController::class,'jvscalc']);
