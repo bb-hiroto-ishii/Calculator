@@ -1,6 +1,8 @@
 <?php
 
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CalcController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +19,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/', function () {
+Route::get('/start', function () {
     return view('start');
 });
+
+Route::get('/calculator', function () {
+    return view('calculator');
+});
+
+
+Route::get('/result', function () {
+    return view('result');
+});
+
+Route::post('/calculator', [CalcController::class,'calculator']);
+Route::post('/result', [CalcController::class,'result']);
