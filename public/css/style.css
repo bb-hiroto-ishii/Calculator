@@ -1,0 +1,43 @@
+.box1{
+    float: left;
+
+}
+
+.box2{
+    float: right;
+
+}
+
+.b1{
+    height: 45px;
+    width: 65px;
+    font-size:30px;
+    background-color: #b9ff99;
+}
+
+.b2{
+    height: 95px;
+    width: 65px;
+    font-size:30px;
+    background-color: #b9ff99;
+}
+
+.display{
+    width:90%; 
+    height:50px;  
+    margin-bottom: 10px; 
+    border: 5px double #ffffff; 
+    color: #ffffff; 
+    font-size:40px;
+    border-radius: 10px; 
+    background-color: #000000;
+}
+
+.base{
+    width:400px;
+    height: 300px;
+    margin-bottom: 10px; 
+    border: 1px solid #333333; 
+    border-radius: 10px; 
+    background-color: #36e44e;
+}

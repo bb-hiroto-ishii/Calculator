@@ -179,14 +179,14 @@
                         //掛け算を足し算に変換
                         for($i=0;$i<$max;$i++){
                             if($op[$i]=="*"){
-<<<<<<< Updated upstream
-=======
+
                                 if($fm[$i+1]==""){
                                     //$dsp_old = "ERROR";
                                     $j_error = 1;
                                     return;
                                 }
->>>>>>> Stashed changes
+
+
                                 $fm[$i+1] = $fm[$i] * $fm[$i+1];
                                 $fm[$i] = 0;
                                 $op[$i] = "+";
@@ -510,9 +510,7 @@
                     echo "<input type=\"hidden\" name=\"var{$i}\" value=\"{$var[$i]}\">";
                 }    
                 
-
                 ?>
-
 
             </div>
             </p>
