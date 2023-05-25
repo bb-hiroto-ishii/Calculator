@@ -21,9 +21,16 @@
             <div class="display" align="right">
                 <?PHP
 
+                    //デバッグ用
+                    function console_log($str="",$data){
+                        $data = "{$str}:{$data}";
+                    echo '<script>';
+                    echo 'console.log('.json_encode($data).')';
+                    echo '</script>';
+                    }
 
                     //計算
-                    function calculate(&$dsp_old){
+                    function calculate(&$dsp_old,&$j_error){
 
                     $fms = $dsp_old;
 
@@ -64,7 +71,8 @@
                                         $max++;
                                         break;
                             case "*":
-                            case "/":   $dsp_old = "ERROR";
+                            case "/":   //$dsp_old = "ERROR";
+                                        $j_error = 1;
                                         return;
 
                         }
@@ -100,7 +108,8 @@
                                 if($fm[$j]==""){
                                     //+or-の後に*or/が続く時はエラー
                                     if($op[$j]=="*" || $op[$j]=="/"){
-                                        $dsp_old = "ERROR";
+                                        //$dsp_old = "ERROR";
+                                        $j_error = 1;
                                         return;
                                     //+or-の後に-が続く時は式変換
                                     }elseif($op[$j]=="-"){
@@ -123,6 +132,11 @@
                             }
                         }
 
+                        //型変換
+                        for($i=0;$i<$max;$i++){
+                            $fm[$i] = (float)$fm[$i];
+                        }
+
                         //式を表示
                         // for($i=0;$i<$max;$i++){
                         //     echo $fm[$i].$op[$i];
@@ -133,7 +147,8 @@
                         for($i=0;$i<$max;$i++){
                             if($op[$i]=="/"){
                                 if($fm[$i+1]==0 || $fm[$i+1]==""){
-                                    $dsp_old = "ERROR";
+                                    //$dsp_old = "ERROR";
+                                    $j_error = 1;
                                     return;
                                 }
                                 $fm[$i+1] = 1 / $fm[$i+1];
@@ -164,10 +179,14 @@
                         //掛け算を足し算に変換
                         for($i=0;$i<$max;$i++){
                             if($op[$i]=="*"){
+
                                 if($fm[$i+1]==""){
-                                    $dsp_old = "ERROR";
+                                    //$dsp_old = "ERROR";
+                                    $j_error = 1;
                                     return;
                                 }
+
+
                                 $fm[$i+1] = $fm[$i] * $fm[$i+1];
                                 $fm[$i] = 0;
                                 $op[$i] = "+";
@@ -180,10 +199,10 @@
                         // }
 
 
-                        //型変換
-                        for($i=0;$i<$max;$i++){
-                            $fm[$i] = (float)$fm[$i];
-                        }
+                        // //型変換
+                        // for($i=0;$i<$max;$i++){
+                        //     $fm[$i] = (float)$fm[$i];
+                        // }
 
                         //全て足す
                         $ans=0;
@@ -207,6 +226,9 @@
                         $view = "";
                         $c = 0;
                         
+                        //デバッグ用
+                        console_log("len",$len);
+
                         for($i=$len-1;$i>=0;$i--){
                             //echo "{$i}:";
                             //$n[$i] = substr($dsp_old,$i,1);
@@ -245,6 +267,9 @@
                         $len = strlen($fake);
                         $del = 0;
 
+                        //デバッグ用
+                        console_log("fake",$fake);
+
                         for($i=0;$i<$len;$i++){
                             $n = substr($fake,$i,1);
                         
@@ -255,8 +280,8 @@
                                 if($n!=","){
                                     $view = $view.$n;
                                 }
-                                //数字以外の文字が出てきたら、削除フラグ下げる
-                                if(is_numeric($n)==false){
+                                //数字以外の文字（,は除く）が出てきたら、削除フラグ下げる
+                                if(is_numeric($n)==false && $n!=","){
                                     $del=0;
                                 }
                             }else{
@@ -267,6 +292,10 @@
                             if($n=="."){
                                 $del=1;
                             }
+
+                            //デバッグ用
+                            console_log("del_flg",$del);
+                            
 
                         }
 
@@ -316,6 +345,10 @@
                         return 0;
                     }
                         
+                    //ここからメインルート
+                    $j_error = 0;
+                    $j_lock = 0;
+
                     //入力値あるかどうか
                     if(isset($dsp)){
                         
@@ -343,8 +376,10 @@
                             //前回の入力値に今回の入力値をくっつける。
                             $dsp_old .= $dsp;
 
-                            //初期化後入力フラグ上げ
-                            $j_in=1;
+                            //入力フラグ上げ
+                            if($dsp != "="){
+                                $j_in=1;
+                            }
                         }
                         
                     }else{
@@ -352,58 +387,82 @@
                         initialize($dsp_old,$dsp,$j_in,$j_dp,$j_op,$len);
                     }
 
-                            //入力値の限界桁は8桁
-                            $len_max = 8;
-                            //小数点があった場合は9桁
-                            if($j_dp==1){
-                                $len_max = 9;
-                            } 
-                            //入力済みの桁が限界をこえてたら
-                            if($len+1>$len_max){
-                                if(
-                                    $dsp=="+" 
-                                    || $dsp=="-"
-                                    || $dsp=="*"
-                                    || $dsp=="/"
-                                ){
-                                    //なにもしない
-                                }else{
-                                    $dsp_old = "ERROR";
-                                    echo "ERROR";
-                                    goto error;
-                                }
-                            }
+                    // //入力値の限界桁は8桁
+                    // $len_max = 8;
+                    // //小数点があった場合は9桁
+                    // if($j_dp==1){
+                    //     $len_max = 9;
+                    // } 
+                    // //入力済みの桁が限界をこえてたら
+                    // if($len+1>$len_max){
+                    //     if(
+                    //         $dsp=="+" 
+                    //         || $dsp=="-"
+                    //         || $dsp=="*"
+                    //         || $dsp=="/"
+                    //     ){
+                    //         //なにもしない
+                    //     }else{
+                    //         //エラー
+                    //         $j_error = 1;
+                    //     }
+                    // }
 
+                    //デバッグ用
+                    console_log("文字数",$len+1);
+                    console_log("限界文字数",$len_max);
+
+                    //表示フェーズ
                     //=が入力されていた場合は計算
                     if($dsp=="="){
-                        calculate($dsp_old);
+
+                        //入力制限フラグ上げる
+                        //何も入力してない時は、＝押しても入力制限しない
+                        if($j_in != 0){
+                            $j_lock = 1;
+                        }
+
+                        //計算処理
+                        calculate($dsp_old,$j_error);
+
+                        //エラーフラグ確認用
+                        //echo "j_error[{$j_error}]";
 
                         //計算結果が、8桁を超える場合は、上から8桁分表示
                         $len_max = 8;
-                            //負の数の時の符号は含まないので+1桁
-                            if($dsp_old<0){
-                                $len_max++;
-                            } 
+                        //負の数の時の符号は含まないので+1桁
+                        if($dsp_old<0){
+                            $len_max++;
+                        } 
 
-                            //少数点も含まないので+1桁
-                            if(strpos($dsp_old,".")!=false){
-                                $len_max++;
-                            }
+                        //少数点も含まないので+1桁
+                        if(strpos($dsp_old,".")!=false){
+                            $len_max++;
+                        }
 
-                            //入力済みの桁が限界をこえてたら
-                            if($len_max<strlen($dsp_old)){
-                                $dsp_old = substr($dsp_old,0,$len_max);
-                            }
+                        //入力済みの桁が限界をこえてたら
+                        if($len_max<strlen($dsp_old)){
+                            $dsp_old = substr($dsp_old,0,$len_max);
+                        }
 
-                        echo cut($dsp_old);
-
-                        error:
+                        //計算結果表示
+                        if($j_error == 1){
+                            echo "ERROR";
+                            $j_lock = 1;
+                        }else{
+                            echo cut($dsp_old);
+                        }
                         initialize($dsp_old,$dsp,$j_in,$j_dp,$j_op,$len);
                     }else{
 
-                        //計算結果表示
-                        echo cut($dsp_old);
-                        //echo "&".$dsp;
+                        //入力値表示
+                        if($j_error == 1){
+                            echo "ERROR";
+                            $j_lock = 1;
+                        }else{
+                            echo cut($dsp_old);
+                        }
+                            //echo "&".$dsp;
                         
                         //桁カウント
                         //入力値が演算子の時、初期値から変わッて無い時、リセット
@@ -457,31 +516,50 @@
             </p>
 
             <table>
+
                 <tr>
-                    <td><button class="b1" type="submit" name="name" value="7">7</button></td>
-                    <td><button class="b1" type="submit" name="name" value="8">8</button></td>
-                    <td><button class="b1" type="submit" name="name" value="9">9</button></td>
-                    <td><button class="b1" type="submit" name="name" value="+">+</button></td>
+                    <td><button class="b1" type="submit" name="name" value="7" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >7</button></td>
+                    <td><button class="b1" type="submit" name="name" value="8" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >8</button></td>
+                    <td><button class="b1" type="submit" name="name" value="9" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >9</button></td>
+                    <td><button class="b1" type="submit" name="name" value="+" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >+</button></td>
                 </tr>
                 <tr>
-                    <td><button class="b1" type="submit" name="name" value="4">4</button></td>
-                    <td><button class="b1" type="submit" name="name" value="5">5</button></td>
-                    <td><button class="b1" type="submit" name="name" value="6">6</button></td>
-                    <td><button class="b1" type="submit" name="name" value="-">-</button></td>
+                    <td><button class="b1" type="submit" name="name" value="4" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >4</button></td>
+                    <td><button class="b1" type="submit" name="name" value="5" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >5</button></td>
+                    <td><button class="b1" type="submit" name="name" value="6" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >6</button></td>
+                    <td><button class="b1" type="submit" name="name" value="-" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >-</button></td>
                 </tr>
                 <tr>
-                    <td><button class="b1" type="submit" name="name" value="1">1</button></td>
-                    <td><button class="b1" type="submit" name="name" value="2">2</button></td>
-                    <td><button class="b1" type="submit" name="name" value="3">3</button></td>
-                    <td><button class="b1" type="submit" name="name" value="*">×</button></td>
-                    <td rowspan="2"><button class="b2" type="submit" name="name" value="=">=</button></td>
+                    <td><button class="b1" type="submit" name="name" value="1" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >1</button></td>
+                    <td><button class="b1" type="submit" name="name" value="2" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >2</button></td>
+                    <td><button class="b1" type="submit" name="name" value="3" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >3</button></td>
+                    <td><button class="b1" type="submit" name="name" value="*" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >×</button></td>
+                    <td rowspan="2">
+                        <button class="b2" type="submit" name="name" value="=" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >=</button></td>
                 </tr>
                 <tr>
                     <td><button class="b1" type="submit" name="name" value="AC">AC</button></td>
-                    <td><button class="b1" type="submit" name="name" value="0">0</button></td>
-                    <td><button class="b1" type="submit" name="name" value=".">.</button></td>
-                    <td><button class="b1" type="submit" name="name" value="/">÷</button></td>
+                    <td><button class="b1" type="submit" name="name" value="0" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >0</button></td>
+                    <td><button class="b1" type="submit" name="name" value="." 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >.</button></td>
+                    <td><button class="b1" type="submit" name="name" value="/" 
+                        <?php if($j_lock == 1){echo "disabled";} ?>     >÷</button></td>
                 </tr>
+
             </table>
         </form>
     </div>
