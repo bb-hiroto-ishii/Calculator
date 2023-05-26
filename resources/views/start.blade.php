@@ -6,424 +6,245 @@
 </head>
 <a href="http://localhost/Calculator/public/calculator">戻る</a>
 
-<p>
-    <?PHP
-
-    echo "電卓作成がんばろう！";
-?>
-</p>
-<p>
-    <?php
-    
-    //式
-    $dsp_old = "1232+10101000";
-    echo $dsp_old;
-    
-    $j_error = 0;
-
-    function count_digit(&$dsp_old,&$j_error){
-        
-        $max = 8;
-        $len = strlen($dsp_old);
-        $result ="";
-        $count = 0;
-        
-        //後ろから順に、演算子以外を抜き出す
-        for($i=1;$i<=$len;$i++){ 
-            $n = substr($dsp_old,-$i,1);
-
-            //見ているところが演算子だったら処理終了
-            if(
-                $n=="+"
-                || $n=="-"
-                || $n=="*"
-                || $n=="/"
-            ){
-                return;
-            //それ以外ならカウントアップ
-            }else{
-                //小数点だったら限界桁数+1
-                if($n == "."){
-                    $max = 9;
-                }
-                $count++;
-
-                //カウントが最大桁数超えたらエラーフラグ上げ
-                if($count>$max){
-                    $j_error=1;
-                    return;
-                }
-            }
-        }
-
-        
-    }
-
-    count_digit($dsp_old,$j_error);
-
-    echo "桁チェック:{$j_error}";
-
-    ?>
-</p>
-<p>
-
-    
-
-
-
+<body>
 
     <script>
-        var dsp = "";
-        var n = 0;
 
+var dsp_old,j_error;
+j_error=0;
 
-    addEventListener("keydown", keydownEvent);
+dsp_old = "3434*-261-434/+22/2=";
 
-    function keydownEvent(event) {
-        
-        var key_code = event.keyCode;
-        
+//計算
+function calculate(){
 
-        // if( key_code === 49){
-        //     //alert(event.keyCode);
-            
-        //     dsp +=1;
+var fms,max,i,len,n,j,ans;
 
-        // }
-
-        // if( key_code === 50){
-        //     //alert(event.keyCode);
-            
-        //     dsp +=2;
-   
-        // }
-
-        switch( key_code ){
-            case 13 :   calc();
-                        break;
-            case 48 :   n =0;
-                        break;
-            case 49 :   n =1;
-                        break;
-            case 50 :   n =2;
-                        break;
-            case 51 :   n =3;
-                        break;
-            case 52 :   n =4;
-                        break;
-            case 53 :   n =5;
-                        break;
-            case 54 :   n =6;
-                        break;
-            case 55 :   n =7;
-                        break;
-            case 56 :   n =8;
-                        break;
-            case 57 :   n =9;
-                        break;                        
-            case 27 :   dsp ="";n=0;
-                        calc();
-                        break;
-            default :   n =0
-                        alert(key_code);
-        }
-
-        if(key_code != 13){
-            dsp = ""+dsp+n;
-            
-        }
-
-        var testarea = document.getElementById("testarea");
-            testarea.innerHTML = dsp;
-
-        if(key_code===13){
-            dsp = "";
-            n = 0;
-        }
-
-            // var testarea = document.getElementById("testarea");
-            // testarea.innerHTML = dsp;
-    }
-
-    function calc(){
-        dsp = dsp*10;
-    }
-
-    </script>
-</p>
-<p id="testarea">
-テスト
-</p>
-
-    <button type="button" onclick="ALERT()" id="testarea">最高だぜ！</button>
-
-    <script>
-        function ALERT(){
-            alert("yeah!");
-        }
-    </script>
-</p>
-<p>
-
-    <?php
-
-
-
-
-function cut(&$dsp_old){
-    
-    $len = strlen($dsp_old);
-    $fake = "";
-    $view = "";
-    $c = 0;
-
-    echo "[{$len}]";
-    
-    for($i=$len-1;$i>=0;$i--){
-        //echo "{$i}:";
-        //$n[$i] = substr($dsp_old,$i,1);
-        $n = substr($dsp_old,$i,1);
-        
-        //echo $n[$i];
-        
-        //抽出文字が数字だったら
-        if(is_numeric($n)==true){
-            //書き込み済み数字が3桁だったら"，"を挟む
-            if($c>2){
-                $fake = ",".$fake;      
-                $c=0;  
-            }
-        }
-        //表示用文字列として書き込む
-        $fake = $n.$fake;
-
-        //抽出文字が数字だったらカウントアップ、違ったらリセット
-        if(is_numeric($n)==true){    
-            $c++;
-        }else{
-            $c=0;
-        }
-    }
-
-    //改めて先頭から見て、小数部に","があったら消す。
-    $len = strlen($fake);
-    $del = 0;
-
-    for($i=0;$i<$len;$i++){
-        $n = substr($fake,$i,1);
-    
-        
-
-        //削除フラグがあがっているときは、","を無視
-        if($del==1){
-            if($n!=","){
-                $view = $view.$n;
-            }
-            //数字以外の文字が出てきたら、削除フラグ下げる
-            if(is_numeric($n)==false){
-                $del=0;
-            }
-        }else{
-            $view = $view.$n;
-        }
-
-        //追加した文字が小数点だったら、","削除フラグ上げる
-        if($n=="."){
-            $del=1;
-        }
-
-        //echo "i:{$i},n:{$n},del:{$del}_";
-    }
-
-    // echo "FAKE:";
-    // echo $fake;
-    echo "VIEW:";
-    echo $view;
-
-    // for($i=0;$i<$len;$i++){
-    //     echo "【{$n[$i]}】";
-    // }
-
-}
-
-cut($dsp_old);
-
-function calculate(&$dsp_old){
-
-$fms = $dsp_old;
+fms = dsp_old;
 
 //演算子の数
-$max=0;
+max=0;
+
+//式文字数
+len=fms.length;
 
 //演算子の数を数える
-for($i=0;$i<=strlen($fms);$i++){
+for(i=0;i<=len;i++){
     //$i番目の文字を取得
-    $t=substr($fms,$i,1);
+    n=fms.substr(i,1);
     //=まで来たらループ抜ける
-    if($t=="="){
-        $max++;
+    if(n=="="){
+        max++;
         break;
     
     //文字が演算子だったら
-    }elseif(
-        $t=="+"
-        || $t=="-"
-        || $t=="*"
-        || $t=="/"
+    }else if(
+        n=="+"
+        || n=="-"
+        || n=="*"
+        || n=="/"
     ){
-        $max++;
+        max++;
     }
 }
 
-//表示
-echo "[{$max}]";
-
+console.log("[op_count:"+max+"]")
 
     //先頭に符号があった場合
     //先頭の文字
-    $t=substr($fms,0,1);
+    n=fms.substr(0,1);
 
-    switch($t){
+    switch(n){
         case "+":
-        case "-":   $fms = "0".$fms;
-                    $max++;
+        case "-":   fms = "0"+fms;
+                    max++;
                     break;
         case "*":
-        case "/":   echo "ERROR";
-                    exit;
+        case "/":   j_error = 1;
+                    return;
 
+    }
+
+
+    //末尾に符号があった場合エラー
+    n=fms.substr(-2,1);
+
+    if(
+        n=="+"
+        || n=="-"
+        || n=="*"
+        || n=="/"
+    ){
+        j_error=1;
+        return;
     }
 
     //必要数分配列を用意
-    for($i=0;$i<$max;$i++){
-        $fm[$i]="";
-        $op[$i]="";
+    var fm = new Array(max);
+    var op = new Array(max);
+
+
+    for(i=0;i<max;i++){
+
+    //配列初期化
+    fm[i] = "";
+    op[i] = "";
+
+        console.log("[fm"+i+":"+fm[i]+"]");
+        console.log("[op"+i+":"+op[i]+"]");
     }
 
+    
+    
     //ループ用、
-$j=0;
+    j=0;
 
     //数値と符号を分けてそれぞれ配列に入れる
-    for($i=0;$i<=strlen($fms);$i++){
+    for(i=0;i<=fms.length;i++){
         //$i番目の文字を取得
-        $t=substr($fms,$i,1);
+        n=fms.substr(i,1);
         //=まで来たらループ抜ける
-        if($t=="="){
+        if(n=="="){
             break;
         }
         //文字が演算子だったら
         if(
-            $t=="+"
-            || $t=="-"
-            || $t=="*"
-            || $t=="/"
+            n=="+"
+            || n=="-"
+            || n=="*"
+            || n=="/"
         ){
             //演算子用配列に入れる
-            $op[$j]=$t;
+            op[j]=n;
 
             //$op[$j]の前に数値がなかったら、
-            if($fm[$j]==""){
+            if(!fm[j]){
                 //+or-の後に*or/が続く時はエラー
-                if($op[$j]=="*" || $op[$j]=="/"){
-                    echo "ERROR";
-                    exit;
+                if(op[j]=="*" || op[j]=="/"){
+                    j_error = 1;
+                    return;
                 //+or-の後に-が続く時は式変換
-                }elseif($op[$j]=="-"){
-                    switch($op[$j-1]){
-                        case "+":   $op[$j-1]="-";
+                }else if(op[j]=="-"){
+                    switch(op[j-1]){
+                        case "+":   op[j-1]="-";
                                     break;
-                        case "-":   $op[$j-1]="+";
+                        case "-":   op[j-1]="+";
                                     break;
                         case "*":
-                        case "/":   $fm[$j-1]=-$fm[$j-1]; 
+                        case "/":   fm[j-1]=-fm[j-1]; 
                                     break;
                     }
                 }
                 //+なら無視する
             }else{
-                $j++;
+                j++;
             }
         }else{
-            $fm[$j].=$t;
+            fm[j] = " " + fm[j] + n;
         }
+
+        console.log("[n:"+n+"]");
     }
 
-    //式を表示
-    for($i=0;$i<$max;$i++){
-        echo $fm[$i].$op[$i];
+    for(i=0;i<max;i++){
+        console.log("[formula:"+ fm[i]+op[i]+"]");
     }
 
+    //型変換
+    for(i=0;i<max;i++){
+        fm[i] = Number(fm[i]);
+    }
 
     //割り算を掛け算に変換
-    for($i=0;$i<$max;$i++){
-        if($op[$i]=="/"){
-            if($fm[$i+1] == "0" || $fm[$i+1] == ""){
-                exit;
-            }else{
-                $fm[$i+1] = 1 / $fm[$i+1];
-                $op[$i] = "*";
+    for(i=0;i<max;i++){
+        if(op[i]=="/"){
+            if(fm[i+1]==0 || fm[i+1]==""){
+                j_error = 1;
+                return;
             }
+            fm[i+1] = 1 / fm[i+1];
+            op[i] = "*";
         }
     }
 
-
-    //表示
-    for($i=0;$i<$max;$i++){
-        echo $fm[$i].$op[$i];
+    //引き算を足し算に変換
+    for(i=0;i<max;i++){
+        if(op[i]=="-"){
+            fm[i+1] = -fm[i+1];
+            op[i] = "+";
+        }
     }
+
+    //掛け算を足し算に変換
+    for(i=0;i<max;i++){
+        if(op[i]=="*"){
+
+            if(fm[i+1]==""){
+                j_error = 1;
+                return;
+            }
+
+            fm[i+1] = fm[i] * fm[i+1];
+            fm[i] = 0;
+            op[i] = "+";
+        }
+    }
+
+    for(i=0;i<max;i++){
+        console.log("[changed_formula:"+fm[i]+"@"+op[i]+"]");
+    }
+
+    //全て足す
+    ans=0;
+    for(i=0;i<max;i++){
+        ans = ans + fm[i];
+
+        console.log("[ans:"+ans+"]");
+    }
+
+    //結果格納
+    dsp_old = ans;
+
 }
 
-//     //引き算を足し算に変換
-//     for($i=0;$i<$max;$i++){
-//         if($op[$i]=="-"){
-//             $fm[$i+1] = -$fm[$i+1];
-//             $op[$i] = "+";
-//         }
-//     }
-
-//     // //表示
-//     // for($i=0;$i<$max;$i++){
-//     //     echo $fm[$i].$op[$i];
-//     // }
 
 
-//     //掛け算を足し算に変換
-//     for($i=0;$i<$max;$i++){
-//         if($op[$i]=="*"){
-//             $fm[$i+1] = $fm[$i] * $fm[$i+1];
-//             $fm[$i] = 0;
-//             $op[$i] = "+";
-//         }
-//     }
+//計算結果が、8桁を超える場合は、上から8桁分表示
+function after_count_digit(){
 
-//     // //表示
-//     // for($i=0;$i<$max;$i++){
-//     //     echo $fm[$i].$op[$i];
-//     // }
+    dsp_old = String(dsp_old);
+
+    //最大桁数8桁
+    len_max = 8;
+
+    //負の数の時の符号は含まないので+1桁
+    if(dsp_old<0){
+        len_max++;
+    } 
+
+    //少数点も含まないので+1桁
+    if(dsp_old.indexOf(".")!=-1){
+        len_max++;
+    }
+
+    //入力済みの桁が限界をこえてたら
+    if(len_max<dsp_old.length){
+        dsp_old = dsp_old.substr(0,len_max);
+    }
+
+}
+
+calculate();
+
+after_count_digit();
 
 
-//     //型変換
-//     for($i=0;$i<$max;$i++){
-//         $fm[$i] = (float)$fm[$i];
-//     }
+console.log("[result:"+dsp_old+"]");
+console.log("[ERROR:"+j_error+"]");
 
-//     //全て足す
-//     $ans=0;
-//     for($i=0;$i<$max;$i++){
-//         $ans = $ans + $fm[$i];
-//     }
 
-//     //結果格納
-//     $dsp_old = $ans;
+    </script>
 
-//     //結果表示
-//     echo $dsp_old;
-
-// }
-
-//calculate($dsp_old);
-
-?>
-</p>
+</body>
 
 </html>
