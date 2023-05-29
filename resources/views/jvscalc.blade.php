@@ -9,17 +9,30 @@
 
         <script>
         
+        //ページ更新で再起動
         window.addEventListener("load",stand_up);
 
-        var dsp_old,dsp,j_dp,j_in;
+        var dsp_old,dsp,j_dp,j_in,j_end;
 
+        //初期化処理
         function initialize(){
-            dsp_old =0;
-            dsp = 0;
-            j_dp=0;
-            j_in=0;
-            j_op=0;
-            j_error=0;
+            dsp_old =0;     //計算式、計算結果用変数
+            dsp = 0;        //入力値用
+            j_dp=0;         //小数点フラグ
+            j_in=0;         //入力値フラグ
+            j_op=0;         //演算子フラグ
+            j_error=0;      //エラーフラグ
+            j_end=0;        //計算終了フラグ
+
+            //全ボタン取得
+            const button = document.querySelectorAll("button");
+            //console.log(button);
+
+            //全ボタン活性
+            for(i=0;i<17;i++){
+            button[i].disabled = false;
+            }
+
 
             //console.log(dsp_old);
             //console.log(dsp);
@@ -27,91 +40,109 @@
 
         }
 
+        //再起動処理
         function stand_up(){
             initialize();
             view(dsp_old);
         }
 
+        //0入力時
         function key0(){
             dsp="0";
             return;    
         }
 
+        //1入力時
         function key1(){
             dsp=1;
             return;    
         }
 
+        //2入力時
         function key2(){
             dsp=2;
             return;    
         }
 
+        //3入力時
         function key3(){
             dsp=3;
             return;    
         }
 
+        //4入力時
         function key4(){
             dsp=4;
             return;    
         }
 
+        //5入力時
         function key5(){
             dsp=5;
             return;    
         }
 
+        //6入力時
         function key6(){
             dsp=6;
             return;    
         }
 
+        //7入力時
         function key7(){
             dsp=7;
             return;    
         }
 
+        //8入力時
         function key8(){
             dsp=8;
             return;    
         }
 
+        //9入力時
         function key9(){
             dsp=9;
             return;    
         }
 
+        //=入力時
         function keyEQ(){
             dsp="=";
             return;
         }
 
+        //+入力時
         function keyAD(){
             dsp="+";
             return;
         }
 
+        //-入力時
         function keyDF(){
             dsp="-";
             return;
         }
 
+        //*入力時
         function keyML(){
             dsp="*";
             return;
         }
 
+        //"/"入力時
         function keyDV(){
             dsp="/";
             return;
         }
 
+        //"."入力時
         function keyDP(){
             dsp=".";
             return;
         }
 
+        //AC入力時
         function keyAC(){
             dsp="AC";
             return;
@@ -125,6 +156,7 @@
 
         var fms,max,i,len,n,j,ans;
 
+        //計算式受け取り
         fms = dsp_old;
 
         //演算子の数
@@ -159,6 +191,7 @@
             //先頭の文字
             n=fms.substr(0,1);
 
+            //+or-なら先頭に0を加える。*or/ならエラー
             switch(n){
                 case "+":
                 case "-":   fms = "0"+fms;
@@ -267,6 +300,7 @@
                         j_error = 1;
                         return;
                     }
+                    //toPrecision：小数値を省略せず表示
                     fm[i+1] = (1 / fm[i+1]).toPrecision();
                     op[i] = "*";
                 }
@@ -296,7 +330,7 @@
             }
 
             for(i=0;i<max;i++){
-                console.log("[changed_formula:"+fm[i]+"@"+op[i]+"]");
+                //console.log("[changed_formula:"+fm[i]+"@"+op[i]+"]");
             }
 
             //全て足す
@@ -308,7 +342,7 @@
             }
 
             //結果格納
-            dsp_old = Number(ans).toFixed(20);
+            dsp_old = Number(ans);
 
         }
         
@@ -357,43 +391,55 @@
         function get_input(){
             //指定キーだったら
             if(dsp != "no_in"){
-                
-                //入力値が小数点だったら
-                if(dsp == "."){
-                    //小数点入力していいかどうか
-                    //小数点が既に入力されていたら制限
-                    if(j_dp==1){
-                        //console.log("j_dp:1")
-                        dsp="";
-
-                    //小数点入力されていなかったら、
+            
+                //＝入力時
+                if(dsp == "="){
+                    //起動直後ならなにもしない
+                    if(j_in==0){
+                        return;
+                    //計算終了フラグ上げ
                     }else{
-                        //小数点フラグ上げ
-                        j_dp = 1;
+                        j_end=1;
                     }
-                    
-                    //既入力値が演算子なら,
-                    if(j_op == 1){
-                        dsp = "0.";
-                    }
-
-                }
-
-                //入力値が演算子なら
-                if(
-                    dsp == "+"
-                    || dsp == "-"
-                    || dsp == "*"
-                    || dsp == "/"
-                ){
-                    //演算子フラグ上げ
-                    j_op=1;
-                    //小数点フラグ下げ
-                    j_dp=0;
-
-                    //演算子以外の入力で演算子フラグ下げ
                 }else{
-                    j_op=0;
+                
+                    //入力値が小数点だったら
+                    if(dsp == "."){
+                        //小数点入力していいかどうか
+                        //小数点が既に入力されていたら制限
+                        if(j_dp==1){
+                            //console.log("j_dp:1")
+                            dsp="";
+
+                        //小数点入力されていなかったら、
+                        }else{
+                            //小数点フラグ上げ
+                            j_dp = 1;
+                        }
+                        
+                        //既入力値が演算子なら,
+                        if(j_op == 1){
+                            dsp = "0.";
+                        }
+
+                    }
+
+                    //入力値が演算子なら
+                    if(
+                        dsp == "+"
+                        || dsp == "-"
+                        || dsp == "*"
+                        || dsp == "/"
+                    ){
+                        //演算子フラグ上げ
+                        j_op=1;
+                        //小数点フラグ下げ
+                        j_dp=0;
+
+                        //演算子以外の入力で演算子フラグ下げ
+                    }else{
+                        j_op=0;
+                    }
                 }
             
                 dsp_old = ""+ dsp_old + dsp;
@@ -402,11 +448,30 @@
 
         //表示処理
         function view(text){
+            let i=0;    //ループ用
 
+            //エラーフラグ上がってたらエラー文用意
             if(j_error==1){
                 text = "ERROR";
             }
+        
+        //エラーフラグ上がってるとき、もしくは、計算結果出力時、AC以外のボタン非活性非活性化        
+        if(j_error==1 || j_end==1){
+            //全ボタン取得
+            const button = document.querySelectorAll("button");
+            //console.log(button);
 
+            //全ボタン非活性
+            for(i=0;i<17;i++){
+            button[i].disabled = true;
+            }
+
+            //ACだけ活性化
+            const buttonAC = document.getElementById("AC");
+            buttonAC.disabled = false;
+        }
+
+            //表示
             var testarea = document.getElementById("DSP");
             testarea.innerHTML = text;
         }
@@ -469,18 +534,17 @@
 
         var len,fake,view,c,i,n,del;
 
-        dsp_old = String(dsp_old);
-        len = dsp_old.length;
-        fake = "";
-        view = "";
-        c = 0;
+        dsp_old = String(dsp_old);      //表示数式、数値を文字列に型変換
+        len = dsp_old.length;           //表示文字数取得
+        fake = "";                      //表示データ一時保存用
+        view = "";                      //表示データ用
+        c = 0;                          //桁カウント用
 
         //デバッグ用
         //console.log("len:"+len);
         //console.log("dsp_old:"+dsp_old);
 
         //末尾から順に抽出
-
         for(i=1;i<=len;i++){
             n = dsp_old.substr(-i,1);
 
@@ -576,15 +640,20 @@
 
         //少数点も含まないので+1桁
         if(dsp_old.indexOf(".")!=-1){
-            len_max++;
+            len_max+=2;;
         }
+
+        //console.log("a_c_d-DP:"+dsp_old.indexOf("."));
 
         //入力済みの桁が限界をこえてたら
         if(len_max<dsp_old.length){
-            dsp_old = dsp_old.substr(0,len_max);
+            dsp_old = dsp_old.substr(0,len_max-1);
         }
 
-            return dsp_old;
+        //デバッグ用
+        //console.log("a_c_d-len_max:"+len_max);
+        return dsp_old;
+
         }
 
         //キーボード入力時の処理
@@ -592,6 +661,15 @@
             
             var key_code = event.keyCode;
     
+            //エラーフラグが上がっているとき,計算結果表示後は、入力無効化
+            if(j_error == 1 || j_end == 1){
+                switch( key_code ){
+                    case 27:    keyAC();
+                                break;
+                    default:    dsp="";
+                }
+            }else{
+
             //入力キーごとに関数呼び出し（入力値設定）
             switch( key_code ){
                 case 13 :   keyEQ();    //enter
@@ -630,31 +708,40 @@
                             break;
                 default :   dsp="";
             }
+        }
 
             //入力なしの時は何もしないで終了
             if(dsp==""){
                 return;
             }
 
+            //Enter押下で計算結果表示
             if(dsp=="="){
 
                 judge_head();
                 
                 get_input();
 
+                console.log("式："+dsp_old);                
+
                 calculate();
+
+                console.log("解："+dsp_old);
 
                 after_count_digit();
 
                 view(cut());
                 
-                initialize();
+                //initialize();
 
+            //計算式入力
             }else{
 
                 //入力がACだった時は、再起動
                 if(dsp=="AC"){
                     stand_up();
+
+                //AC以外なら表示に追加
                 }else{
 
                     //console.log(dsp);
@@ -693,13 +780,17 @@
 
                 get_input();
 
+                console.log("式："+dsp_old);                
+
                 calculate();
+
+                console.log("解："+dsp_old);
 
                 after_count_digit();
 
                 view(cut());
 
-                initialize();
+                //initialize();
 
             }else{
 
@@ -767,7 +858,7 @@
                     <button class="b2" onclick="keyEQ()" name="name" value="=">=</button></td>
             </tr>
             <tr>
-                <td><button class="b1" onclick="keyAC()" name="name" value="AC">AC</button></td>
+                <td><button id="AC" class="b1" onclick="keyAC()" name="name" value="AC">AC</button></td>
                 <td><button class="b1" onclick="key0()" name="name" value="0">0</button></td>
                 <td><button class="b1" onclick="keyDP()" name="name" value=".">.</button></td>
                 <td><button class="b1" onclick="keyDV()" name="name" value="/">÷</button></td>

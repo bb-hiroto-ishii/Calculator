@@ -13,7 +13,55 @@
 var dsp_old,j_error;
 j_error=0;
 
-dsp_old = "3434*-261-434/+22/2=";
+dsp_old = "343.10000";
+
+//小数値の不要な0を削除、小数値が無い時は小数点削除
+//Numberで型変換すれば解決(^ω^)b
+function decimal_0_clear(){
+
+    var d_num,dp_posi,n,limit;
+    limit=0;
+
+    dsp_old = String(dsp_old);
+
+    //小数点の位置を取得
+    dp_posi = dsp_old.indexOf(".");
+    console.log("dp_posi:"+dp_posi);
+
+    //小数部取得
+    d_num = dsp_old.substr(dp_posi);
+    console.log("d_num:"+d_num);
+
+    console.log("number(d_num):"+Number(d_num));
+
+    //小数値があるか判断（小数部が0以上か）
+    if(Number(d_num) > 0){
+        
+        n=0;
+    //右から順に見て、0なら削除、0以外なら終了
+        while(n!="."){
+            n=dsp_old.substr(-1,1);
+            console.log("n:"+n);
+            if(n==0 || n=="."){
+                dsp_old=dsp_old.slice(0,-1);
+            }else{
+                return;
+            }
+
+            //ループがバグった時強制終了させる用
+            limit++;
+            if(limit>100){
+                j_error = 1;
+                return;
+            }
+        }
+    //小数点含む右側削除
+    }else{
+        dsp_old=dsp_old.slice(0,-d_num.length);
+    }
+
+    return;
+}
 
 //計算
 function calculate(){
@@ -162,7 +210,7 @@ console.log("[op_count:"+max+"]")
                 j_error = 1;
                 return;
             }
-            fm[i+1] = 1 / fm[i+1];
+            fm[i+1] = (1 / fm[i+1]).toPrecision();
             op[i] = "*";
         }
     }
@@ -234,12 +282,18 @@ function after_count_digit(){
 
 }
 
-calculate();
+console.log("[before:"+dsp_old+"]");
 
-after_count_digit();
+//calculate();
 
+decimal_0_clear();
 
 console.log("[result:"+dsp_old+"]");
+
+//after_count_digit();
+
+
+
 console.log("[ERROR:"+j_error+"]");
 
 
